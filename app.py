@@ -1,85 +1,81 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
+import plotly.express as px
 
-# PAGE CONFIG
-st.set_page_config(page_title="NUCLIREGEN-P | Comparative Dashboard", layout="wide", page_icon="🧬")
+# Page setup
+st.set_page_config(page_title="NUCLIREGEN-P | Ultra Comparative Dashboard", layout="wide", page_icon="🧬")
 
-# STYLING
+# Styling
 st.markdown("""
     <style>
-        body, .stApp { background-color: #0f111a; color: #ffffff; font-family: 'Segoe UI', sans-serif; }
-        h1, h2, h3, h4, h5, h6, p, .stMarkdown {
-            color: #ffffff !important;
+        body, .stApp {
+            background-color: #0d1117;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
         }
-        .stTabs [role="tab"] {
-            background-color: #1c1f2b;
-            color: #00ffe1;
+        .stDataFrame div {
+            color: white !important;
+            background-color: #1e1e1e;
+            font-size: 16px;
+        }
+        .stDataFrame th {
+            background-color: #111827;
             font-size: 18px;
-        }
-        .stTabs [aria-selected="true"] {
-            background-color: #00ffe1;
-            color: #000;
+            color: #00ffff !important;
         }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🧬 NUCLIREGEN-P: Comparative Intelligence Dashboard")
+st.title("📊 NUCLIREGEN-P: Advanced Comparative Analytics")
+st.markdown("#### 📌 Scientific Comparative Metrics of Therapies")
 
-tab1, tab2 = st.tabs(["📊 Dynamic Table", "🕸️ Radar Insights"])
+# Data
+df = pd.DataFrame({
+    "Metric": [
+        "Efficacy (%)", "Safety (1-10)", "Cost (USD)", "Reversibility (1-10)",
+        "Toxicity (%)", "Permanence (1-10)", "Molecular Specificity (%)",
+        "Nuclear Restoration (%)", "Latency for Action (min)", "Off-Target Risk (%)"
+    ],
+    "NEUCLIREGEN-P": [78, 9.5, 8000, 9.2, 0, 7.8, 99.7, 85, 15, 0.002],
+    "Lonafarnib": [28, 6.2, 100000, 3.0, 5.2, 4.0, 43, 10, 120, 3.8],
+    "CRISPR": [45, 5.1, 500000, 2.1, 12.4, 10.0, 70, 35, 90, 12.0],
+    "Progerinina": [22, 4.0, 60000, 6.0, 8.7, 3.5, 51, 12, 75, 6.1]
+})
 
-# COMPARATIVE DATA
-data = {
-    "Therapy": ["NEUCLIREGEN-P", "Lonafarnib", "CRISPR", "Progerinina"],
-    "Efficacy (%)": [78, 28, 45, 22],
-    "Safety Score (1-10)": [9.5, 6.2, 5.1, 4.0],
-    "Cost (USD)": [8000, 100000, 500000, 60000],
-    "Reversibility (1-10)": [9.2, 3.0, 2.1, 6.0],
-    "Toxicity (%)": [0, 5.2, 12.4, 8.7],
-    "Permanence (1-10)": [7.8, 4.0, 10.0, 3.5]
-}
-df = pd.DataFrame(data)
+# Bubble Chart
+st.markdown("### 🌐 Multi-Metric Bubble Chart View")
+df_transposed = df.set_index("Metric").T.reset_index().rename(columns={"index": "Therapy"})
+bubble_df = df_transposed.melt(id_vars=["Therapy"], var_name="Metric", value_name="Score")
 
-with tab1:
-    st.subheader("📊 Interactive Performance Table: Therapy Comparison")
-    st.dataframe(df.style
-        .background_gradient(cmap="viridis", subset=df.columns[1:])
-        .format(precision=1)
-        .set_properties(**{
-            'text-align': 'center',
-            'border': '1px solid white',
-            'padding': '12px'
-        }), 
-        use_container_width=True, height=500
-    )
+fig = px.scatter(
+    bubble_df,
+    x="Metric",
+    y="Therapy",
+    size="Score",
+    color="Therapy",
+    size_max=50,
+    color_discrete_sequence=px.colors.qualitative.Safe,
+    template="plotly_dark",
+    title="Comparative Bubble View of NEUCLIREGEN-P vs Others"
+)
+fig.update_layout(
+    height=700,
+    xaxis_tickangle=-45,
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color="white", size=14)
+)
+st.plotly_chart(fig, use_container_width=True)
 
-with tab2:
-    st.subheader("🕸️ Radar Chart: Multi-Axis Visual Analysis")
-    radar_df = pd.DataFrame({
-        "Metric": ["Efficacy", "Safety", "Reversibility", "Toxicity", "Permanence", "Cost Efficiency"],
-        "NEUCLIREGEN-P": [78, 95, 92, 100, 78, 91],
-        "Lonafarnib": [28, 62, 30, 48, 40, 25],
-        "CRISPR": [45, 51, 21, 38, 100, 12],
-        "Progerinina": [22, 40, 60, 13, 35, 30]
-    })
-
-    fig = go.Figure()
-    for therapy in radar_df.columns[1:]:
-        fig.add_trace(go.Scatterpolar(
-            r=radar_df[therapy],
-            theta=radar_df["Metric"],
-            fill='toself',
-            name=therapy
-        ))
-
-    fig.update_layout(
-        polar=dict(
-            bgcolor='rgba(0,0,0,0)',
-            radialaxis=dict(visible=True, range=[0, 100], tickfont=dict(color='white')),
-            angularaxis=dict(tickfont=dict(color='white'))
-        ),
-        template="plotly_dark",
-        paper_bgcolor='rgba(0,0,0,0)',
-        title="Radar Chart: NUCLIREGEN-P vs. Other Therapies"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+# Advanced Table
+st.markdown("### 🧬 Scientific Comparative Table (Enhanced)")
+st.dataframe(df.style
+    .background_gradient(axis=1, cmap="turbo")
+    .format("{:.2f}")
+    .set_properties(**{
+        'text-align': 'center',
+        'font-size': '16px'
+    }),
+    use_container_width=True,
+    height=600
+)
