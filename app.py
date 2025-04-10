@@ -90,9 +90,9 @@ radar_fig.update_layout(
 )
 st.plotly_chart(radar_fig, use_container_width=True)
 
-# Enhanced dataframe
+# Enhanced static table without Styler (to avoid matplotlib requirement)
 st.subheader("📊 Scientific Comparative Table")
-st.dataframe(df.style.highlight_max(axis=1, color='darkcyan').format("{:.2f}"), use_container_width=True, height=600)
+st.dataframe(df, use_container_width=True, height=600)
 
 # Footer
 st.markdown("""
