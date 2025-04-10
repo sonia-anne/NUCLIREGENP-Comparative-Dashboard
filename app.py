@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Page setup
+# Configuración general
 st.set_page_config(page_title="NUCLIREGEN-P | Ultra Comparative Dashboard", layout="wide", page_icon="🧬")
 
-# Styling
+# Estilo modo oscuro
 st.markdown("""
     <style>
         body, .stApp {
@@ -23,13 +23,17 @@ st.markdown("""
             font-size: 18px;
             color: #00ffff !important;
         }
+        h1, h2, h3, h4, h5 {
+            color: #00ffff;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("📊 NUCLIREGEN-P: Advanced Comparative Analytics")
-st.markdown("#### 📌 Scientific Comparative Metrics of Therapies")
+# Título
+st.title("🧬 NUCLIREGEN-P: Ultra Comparative Analytics Dashboard")
+st.markdown("#### 📌 Scientific Comparative Metrics of Advanced Therapies")
 
-# Data
+# Datos comparativos
 df = pd.DataFrame({
     "Metric": [
         "Efficacy (%)", "Safety (1-10)", "Cost (USD)", "Reversibility (1-10)",
@@ -42,7 +46,7 @@ df = pd.DataFrame({
     "Progerinina": [22, 4.0, 60000, 6.0, 8.7, 3.5, 51, 12, 75, 6.1]
 })
 
-# Bubble Chart
+# Gráfico de burbujas
 st.markdown("### 🌐 Multi-Metric Bubble Chart View")
 df_transposed = df.set_index("Metric").T.reset_index().rename(columns={"index": "Therapy"})
 bubble_df = df_transposed.melt(id_vars=["Therapy"], var_name="Metric", value_name="Score")
@@ -53,10 +57,10 @@ fig = px.scatter(
     y="Therapy",
     size="Score",
     color="Therapy",
-    size_max=50,
+    size_max=55,
     color_discrete_sequence=px.colors.qualitative.Safe,
     template="plotly_dark",
-    title="Comparative Bubble View of NEUCLIREGEN-P vs Others"
+    title="🧠 Comparative Bubble View: NEUCLIREGEN-P vs. Other Therapies"
 )
 fig.update_layout(
     height=700,
@@ -67,10 +71,11 @@ fig.update_layout(
 )
 st.plotly_chart(fig, use_container_width=True)
 
-# Advanced Table
-st.markdown("### 🧬 Scientific Comparative Table (Enhanced)")
+# Tabla comparativa
+st.markdown("### 📊 Enhanced Scientific Comparative Table")
+
 st.dataframe(df.style
-    .background_gradient(axis=1, cmap="turbo")
+    .highlight_max(axis=1, color='darkcyan')
     .format("{:.2f}")
     .set_properties(**{
         'text-align': 'center',
